@@ -3,6 +3,8 @@ class RMC
     int BelowMedalCount = 0;
     int ModeStartTimestamp = -1;
     bool UserEndedRun = false;
+    // hide main timer and invalid for leaderboards sign (unless map is loading for leaderboards)
+    bool DisplayCompact = false;
 
     UI::Font@ TimerFont = UI::LoadFont("src/Assets/Fonts/digital-7.mono.ttf", 20);
     UI::Texture@ AuthorTex = UI::LoadTexture("src/Assets/Images/Author.png");
@@ -61,19 +63,26 @@ class RMC
                     DataManager::RemoveCurrentSaveFile();
                 }
             }
+            // only show compact button if it's a long run
+            if (PluginSettings::RMC_ShowCompactBtn && PluginSettings::RMC_Duration > 60) {
+                UI::SameLine();
+                if (UI::GreyButton(DisplayCompact ? Icons::Expand : Icons::Compress)) {
+                    DisplayCompact = !DisplayCompact;
+                }
+            }
 
             UI::Separator();
         }
 
         RenderTimer();
-        if (IS_DEV_MODE) UI::Text(RMC::FormatTimer(RMC::StartTime - ModeStartTimestamp));
+        if (IS_DEV_MODE && !PluginSettings::RMC_HideDevButtons) UI::Text(RMC::FormatTimer(RMC::StartTime - ModeStartTimestamp));
         UI::Separator();
         vec2 pos_orig = UI::GetCursorPos();
         RenderGoalMedal();
         vec2 pos_orig_goal = UI::GetCursorPos();
         UI::SetCursorPos(vec2(pos_orig_goal.x+60, pos_orig_goal.y));
         RenderBelowGoalMedal();
-        UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+70));
+        UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+60));
 
         if (PluginSettings::RMC_DisplayPace) {
             try {
@@ -97,32 +106,39 @@ class RMC
         }
     }
 
-    void RenderCustomSearchWarning() {
+    void RenderCustomSearchWarning()
+    {
         if ((RMC::IsRunning || RMC::IsStarting) && PluginSettings::CustomRules) {
-            UI::Separator();
-            UI::Text("\\$fc0"+ Icons::ExclamationTriangle + " \\$zInvalid for offical leaderboards ");
-            UI::SetPreviousTooltip("This run has custom search parameters enabled, meaning that you only get maps after the settings you configured. \nTo change this, toggle the \"Use these parameters in RMC\" under the \"Searching\" settings");
+            if (DisplayCompact && GetApp().RootMap !is null) {
+                // hide invlaid msg
+            } else {
+                UI::Separator();
+                UI::Text("\\$fc0"+ Icons::ExclamationTriangle + " \\$zInvalid for offical leaderboards ");
+                UI::SetPreviousTooltip("This run has custom search parameters enabled, meaning that you only get maps after the settings you configured. \nTo change this, toggle the \"Use these parameters in RMC\" under the \"Searching\" settings");
+            }
         }
     }
 
     void RenderTimer()
     {
-        UI::PushFont(TimerFont);
-        if (RMC::IsRunning || RMC::EndTime > 0) {
-            if (RMC::IsPaused) UI::TextDisabled(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
-            else UI::Text(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
-        } else {
-            UI::TextDisabled(RMC::FormatTimer(TimeLimit()));
+        if (!DisplayCompact) {
+            UI::PushFont(TimerFont);
+            if (RMC::IsRunning || RMC::EndTime > 0) {
+                if (RMC::IsPaused) UI::TextDisabled(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
+                else UI::Text(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
+            } else {
+                UI::TextDisabled(RMC::FormatTimer(TimeLimit()));
+            }
+            UI::PopFont();
+            UI::Dummy(vec2(0, 8));
         }
-        UI::PopFont();
-        UI::Dummy(vec2(0, 8));
         if (PluginSettings::RMC_DisplayMapTimeSpent) {
             UI::PushFont(g_fontHeaderSub);
             UI::Text(Icons::Map + " " + RMC::FormatTimer(RMC::TimeSpentMap));
             UI::SetPreviousTooltip("Time spent on this map");
             UI::PopFont();
         }
-        if (IS_DEV_MODE) {
+        if (IS_DEV_MODE && !PluginSettings::RMC_HideDevButtons) {
             if (RMC::IsRunning || RMC::EndTime > 0) {
                 if (RMC::IsPaused) UI::Text("Timer paused");
                 else UI::Text("Timer running");
@@ -141,7 +157,7 @@ class RMC
         vec2 pos_orig = UI::GetCursorPos();
         UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+8));
         UI::PushFont(TimerFont);
-        UI::Text(tostring(RMC::GoalMedalCount + 123));
+        UI::Text(tostring(RMC::GoalMedalCount));
         UI::PopFont();
         UI::SetCursorPos(pos_orig);
     }
@@ -150,9 +166,9 @@ class RMC
     {
         if (PluginSettings::RMC_GoalMedal != RMC::Medals[0])
         {
-            if (PluginSettings::RMC_GoalMedal == RMC::Medals[3]) UI::Image(GoldTex, vec2(PluginSettings::RMC_ImageSize*2,PluginSettings::RMC_ImageSize*2));
-            else if (PluginSettings::RMC_GoalMedal == RMC::Medals[2]) UI::Image(SilverTex, vec2(PluginSettings::RMC_ImageSize*2,PluginSettings::RMC_ImageSize*2));
-            else if (PluginSettings::RMC_GoalMedal == RMC::Medals[1]) UI::Image(BronzeTex, vec2(PluginSettings::RMC_ImageSize*2,PluginSettings::RMC_ImageSize*2));
+            if (PluginSettings::RMC_GoalMedal == RMC::Medals[3]) UI::Image(GoldTex, vec2(PluginSettings::RMC_ImageSize*2));
+            else if (PluginSettings::RMC_GoalMedal == RMC::Medals[2]) UI::Image(SilverTex, vec2(PluginSettings::RMC_ImageSize*2));
+            else if (PluginSettings::RMC_GoalMedal == RMC::Medals[1]) UI::Image(BronzeTex, vec2(PluginSettings::RMC_ImageSize*2));
             else UI::Text(PluginSettings::RMC_GoalMedal);
             UI::SameLine();
             vec2 pos_orig = UI::GetCursorPos();
@@ -239,7 +255,7 @@ class RMC
                     NextMapButton();
                 }
             }
-            if (IS_DEV_MODE) {
+            if (IS_DEV_MODE && !PluginSettings::RMC_HideDevButtons) {
                 DevButtons();
             }
         }
@@ -335,6 +351,11 @@ class RMC
 
             if ((RMC::EndTime - RMC::StartTime) < (1*60*1000)) RMC::EndTime = RMC::StartTime + (1*60*1000);
         }
+
+        UI::PushItemWidth(100);
+        RMC::GoalMedalCount = UI::InputInt("Goal Medal Count", RMC::GoalMedalCount);
+        BelowMedalCount = UI::InputInt("Below Medal Count", BelowMedalCount);
+        UI::PopItemWidth();
     }
 
     void StartTimer()

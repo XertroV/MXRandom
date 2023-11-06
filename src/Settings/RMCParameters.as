@@ -25,6 +25,12 @@ namespace PluginSettings
     bool RMC_ShowAwards = false;
 
     [Setting hidden]
+    bool RMC_ShowCompactBtn = false;
+
+    [Setting hidden]
+    bool RMC_HideDevButtons = false;
+
+    [Setting hidden]
     bool RMC_SurvivalShowSurvivedTime = true;
 
     [Setting hidden]
@@ -142,6 +148,10 @@ namespace PluginSettings
             RMC_DisplayMapTimeSpent = UI::Checkbox("Display the time spent on the actual map", RMC_DisplayMapTimeSpent);
             RMC_DisplayMapDate = UI::Checkbox("Display the date the map was last updated", RMC_DisplayMapDate);
             RMC_ShowAwards = UI::Checkbox("Display the amount of awards the map has received", RMC_ShowAwards);
+            RMC_ShowCompactBtn = UI::Checkbox("Show button to hide timer and invalid-warning", RMC_ShowCompactBtn);
+            if (IS_DEV_MODE) {
+                RMC_HideDevButtons = UI::Checkbox("Hide Dev Buttons", RMC_HideDevButtons);
+            }
             UI::SetNextItemWidth(100);
             RMC_TagsLength = UI::SliderInt("Display Map Tags Length (0: hidden)", RMC_TagsLength, 0, 3);
 

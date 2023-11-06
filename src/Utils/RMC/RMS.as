@@ -14,7 +14,7 @@ class RMS : RMC
         UI::PushFont(TimerFont);
         if (RMC::IsRunning || RMC::EndTime > 0 || RMC::StartTime > 0) {
             if (RMC::IsPaused) UI::TextDisabled(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
-            else UI::Text(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
+            else if (!DisplayCompact) UI::Text(RMC::FormatTimer(RMC::EndTime - RMC::StartTime));
 
             SurvivedTime = RMC::StartTime - SurvivedTimeStart;
             if (SurvivedTime > 0 && PluginSettings::RMC_SurvivalShowSurvivedTime) {
