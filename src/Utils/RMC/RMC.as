@@ -71,9 +71,9 @@ class RMC
         vec2 pos_orig = UI::GetCursorPos();
         RenderGoalMedal();
         vec2 pos_orig_goal = UI::GetCursorPos();
-        UI::SetCursorPos(vec2(pos_orig_goal.x+50, pos_orig_goal.y));
+        UI::SetCursorPos(vec2(pos_orig_goal.x+60, pos_orig_goal.y));
         RenderBelowGoalMedal();
-        UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+60));
+        UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+70));
 
         if (PluginSettings::RMC_DisplayPace) {
             try {
@@ -141,7 +141,7 @@ class RMC
         vec2 pos_orig = UI::GetCursorPos();
         UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+8));
         UI::PushFont(TimerFont);
-        UI::Text(tostring(RMC::GoalMedalCount));
+        UI::Text(tostring(RMC::GoalMedalCount + 123));
         UI::PopFont();
         UI::SetCursorPos(pos_orig);
     }
@@ -294,7 +294,7 @@ class RMC
             UI::NewLine();
         }
         if (!RMC::GotBelowMedalOnCurrentMap) UI::SetPreviousTooltip(
-            "Free Skips are if the map is finishable but you still want to skip it for any reason.\n"+ 
+            "Free Skips are if the map is finishable but you still want to skip it for any reason.\n"+
             "Standard RMC rules allow 1 Free skip. If the map is broken please use the button below."
         );
 
