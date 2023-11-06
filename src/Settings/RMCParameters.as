@@ -140,6 +140,8 @@ namespace PluginSettings
                 RMC_DisplayMapDate = true;
                 RMC_TagsLength = 1;
                 RMC_ImageSize = 20;
+                RMC_ShowCompactBtn = false;
+                RMC_HideDevButtons = false;
             }
             RMC_DisplayCurrentMap = UI::Checkbox("Display the current map name, author and style (according to MX)", RMC_DisplayCurrentMap);
             RMC_AlwaysShowBtns = UI::Checkbox("Always show the buttons (even when the Openplanet overlay is hidden)", RMC_AlwaysShowBtns);

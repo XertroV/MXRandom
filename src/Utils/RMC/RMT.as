@@ -49,9 +49,9 @@ class RMT : RMC
         vec2 pos_orig = UI::GetCursorPos();
         RenderGoalMedal();
         vec2 pos_orig_goal = UI::GetCursorPos();
-        UI::SetCursorPos(vec2(pos_orig_goal.x+60, pos_orig_goal.y));
+        UI::SetCursorPos(vec2(pos_orig_goal.x + 70. * UI::GetScale(), pos_orig_goal.y));
         RenderBelowGoalMedal();
-        UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y+60));
+        UI::SetCursorPos(vec2(pos_orig.x, pos_orig.y + 60. * UI::GetScale()));
         RenderMVPPlayer();
 
        if (PluginSettings::RMC_DisplayPace) {
